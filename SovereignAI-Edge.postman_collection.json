@@ -1,0 +1,1034 @@
+{
+  "info": {
+    "_postman_id": "7b3f1a6e-2c4d-4e8f-9a1b-5c6d7e8f9a0b",
+    "name": "SovereignAI Edge API",
+    "description": "Postman collection for the SovereignAI Edge portable offline AI compute platform (FastAPI backend).\n\nBase URL: {{baseUrl}} (default http://127.0.0.1:8000)\n\nAll API routes are prefixed with /v1. WebSocket metrics stream available at ws://127.0.0.1:8000/ws/metrics (Postman supports this via the WebSocket request type).\n\nTypical flow:\n1. GET /v1/models/  — list installed models\n2. POST /v1/models/load  — load a model\n3. POST /v1/chat/completions  — chat\n4. POST /v1/benchmark/run  — benchmark\n5. POST /v1/rag/upload  — ingest a document, then /v1/rag/query",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "modelId",
+      "value": "llama3:8b",
+      "type": "string"
+    },
+    {
+      "key": "docId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "snapId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "agentId",
+      "value": "cybersecurity_expert",
+      "type": "string"
+    },
+    {
+      "key": "pluginId",
+      "value": "pdf_ingestion",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Overview",
+      "item": [
+        {
+          "name": "Root Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/",
+            "description": "Basic health check. Returns app name, version, and status."
+          },
+          "response": []
+        },
+        {
+          "name": "Detailed Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health",
+            "description": "Detailed health check including whether a model is loaded, the current model and execution mode."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Chat Completions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a helpful assistant.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello! What can you do?\"\n    }\n  ],\n  \"max_tokens\": 512,\n  \"temperature\": 0.7,\n  \"top_p\": 0.9,\n  \"stream\": false,\n  \"use_rag\": false,\n  \"enable_thinking\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/v1/chat/completions",
+            "description": "Generate a chat completion. Requires a model to be loaded first (POST /v1/models/load).\n\n- stream: true returns SSE (text/event-stream).\n- use_rag: true injects retrieved context from the vector store.\n- enable_thinking: true/false for reasoning models (Qwen3.5); null = template default."
+          },
+          "response": []
+        },
+        {
+          "name": "Execute Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"Explain how quantum computing works in simple terms.\",\n  \"task_type\": \"text_generation\",\n  \"generation_kwargs\": {\n    \"max_tokens\": 256,\n    \"temperature\": 0.7\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/v1/chat/execute",
+            "description": "Universal execution endpoint. Pass a raw JSON payload to the engine's generate(); the whole body is used as input_data and generation_kwargs are forwarded. Returns structured JSON."
+          },
+          "response": []
+        },
+        {
+          "name": "Switch Mode",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/chat/mode/switch?mode=fullram",
+              "query": [
+                {
+                  "key": "mode",
+                  "value": "fullram"
+                }
+              ]
+            },
+            "description": "Switch execution mode for the currently loaded model. Valid modes: fullram, layerstream, auto."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Models",
+      "item": [
+        {
+          "name": "List Installed Models",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/models/",
+            "description": "List all installed models."
+          },
+          "response": []
+        },
+        {
+          "name": "Recommend Models",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"use_case\": \"chat\",\n  \"max_ram_gb\": 16,\n  \"prefer_speed\": true,\n  \"top_n\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/v1/models/recommend",
+            "description": "Recommend models for your hardware + use case via llmfit. use_case: coding, chat, rag, reasoning."
+          },
+          "response": []
+        },
+        {
+          "name": "Pull Model",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"llama3:8b\",\n  \"quant\": \"Q4_K_M\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/v1/models/pull",
+            "description": "Start downloading a model in the background. Returns exists / already_downloading / downloading."
+          },
+          "response": []
+        },
+        {
+          "name": "Pull Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/models/pull/status/{{modelId}}",
+            "description": "Get download progress for a model. The model name is a path parameter (URL-encoded if it contains special chars)."
+          },
+          "response": []
+        },
+        {
+          "name": "Load Model",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"llama3:8b\",\n  \"mode\": \"auto\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/v1/models/load",
+            "description": "Load a model into RAM/VRAM. mode: fullram, layerstream, or auto (default)."
+          },
+          "response": []
+        },
+        {
+          "name": "Unload Model",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/v1/models/unload",
+            "description": "Unload the currently active model and free memory."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Models",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/v1/models/refresh",
+            "description": "Scan the models directory and update the registry."
+          },
+          "response": []
+        },
+        {
+          "name": "Current Model",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/models/current",
+            "description": "Metadata about the currently loaded model for dynamic task UI routing (task_type, input_modality, ram_usage)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Model Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/models/{{modelId}}",
+            "description": "Get details for a specific model."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Model",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/v1/models/{{modelId}}",
+            "description": "Delete a model from disk. Cannot delete a currently loaded model."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Hardware Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/system/hardware",
+            "description": "Get the detected hardware profile."
+          },
+          "response": []
+        },
+        {
+          "name": "System Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/system/status",
+            "description": "Overall system status: model loaded state, RAM/disk usage, engine stats."
+          },
+          "response": []
+        },
+        {
+          "name": "Resource Usage",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/system/resources",
+            "description": "Live CPU %, RAM usage, and disk I/O."
+          },
+          "response": []
+        },
+        {
+          "name": "Model Recommendation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/system/recommendation",
+            "description": "Rule-based model recommendation based on total RAM."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Benchmark",
+      "item": [
+        {
+          "name": "Run Benchmark",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"\",\n  \"backend\": \"llama.cpp\",\n  \"iterations\": 3,\n  \"max_tokens\": 100,\n  \"duration_seconds\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/v1/benchmark/run",
+            "description": "Run an inference benchmark. Empty model = use currently loaded model. Uses llmfit.bench() when available, otherwise in-process timing."
+          },
+          "response": []
+        },
+        {
+          "name": "Compare Modes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/benchmark/compare",
+            "description": "Compare fullram vs layerstream performance for the loaded model."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "RAG",
+      "item": [
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/v1/rag/upload",
+            "description": "Upload a document (.txt or .pdf, max 50MB) for RAG indexing. Returns document_id. PDFs require the pdf_ingestion plugin."
+          },
+          "response": []
+        },
+        {
+          "name": "Query Documents",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"What does the document say about data sovereignty?\",\n  \"top_k\": 5,\n  \"generate_response\": true,\n  \"max_tokens\": 256\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/v1/rag/query",
+            "description": "Search the vector store and optionally generate an answer from the retrieved context (requires a loaded model)."
+          },
+          "response": []
+        },
+        {
+          "name": "List Documents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/rag/documents",
+            "description": "List all indexed documents."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Document Chunks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/rag/documents/{{docId}}/chunks",
+            "description": "Get all chunks (content previews) for a document."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Document",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/v1/rag/documents/{{docId}}",
+            "description": "Delete a document from the index."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Plugins",
+      "item": [
+        {
+          "name": "List Plugins",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/plugins/",
+            "description": "List all loaded plugins with their available actions."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Plugin Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/plugins/{{pluginId}}",
+            "description": "Get details for a specific plugin."
+          },
+          "response": []
+        },
+        {
+          "name": "Enable Plugin",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/v1/plugins/{{pluginId}}/enable",
+            "description": "Enable a plugin."
+          },
+          "response": []
+        },
+        {
+          "name": "Disable Plugin",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/v1/plugins/{{pluginId}}/disable",
+            "description": "Disable a plugin."
+          },
+          "response": []
+        },
+        {
+          "name": "Execute Plugin Action",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"count_lines\",\n  \"params\": {\n    \"code\": \"def hello():\\n    print('hi')\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/v1/plugins/{{pluginId}}/execute",
+            "description": "Execute a plugin action. Builtin plugins:\n\n- code_analyzer: analyze, get_functions, get_classes, count_lines (params: code)\n- pdf_ingestion: extract_text, get_metadata, get_page_count (params: content as bytes)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Workspace",
+      "item": [
+        {
+          "name": "Save Workspace Snapshot",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/v1/workspace/save",
+            "description": "Save current workspace state (model + mode) as a snapshot. Returns the snapshot id."
+          },
+          "response": []
+        },
+        {
+          "name": "List Snapshots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/workspace/",
+            "description": "List saved workspace snapshots."
+          },
+          "response": []
+        },
+        {
+          "name": "Load Snapshot",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/workspace/{{snapId}}",
+            "description": "Load a workspace snapshot by id."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Snapshot",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/v1/workspace/{{snapId}}",
+            "description": "Delete a workspace snapshot by id."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "Get All Settings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/settings/",
+            "description": "Get all settings including agents."
+          },
+          "response": []
+        },
+        {
+          "name": "Reset All Settings",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/v1/settings/reset",
+            "description": "Reset all settings to defaults."
+          },
+          "response": []
+        },
+        {
+          "name": "Get System Prompt",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v1/settings/system-prompt",
+            "description": "Get the constructed system prompt from personalization + active agent."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Audit Log",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/settings/audit-log?limit=100",
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            },
+            "description": "Get the audit log. limit: 1-1000, default 100."
+          },
+          "response": []
+        },
+        {
+          "name": "General",
+          "item": [
+            {
+              "name": "Get General Settings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/v1/settings/general",
+                "description": "Get general settings."
+              },
+              "response": []
+            },
+            {
+              "name": "Update General Settings",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"theme\": \"dark\",\n  \"language\": \"en\",\n  \"auto_start_backend\": true,\n  \"minimize_to_tray\": true,\n  \"show_status_bar\": true,\n  \"enable_notifications\": true,\n  \"startup_model\": null,\n  \"default_mode\": \"auto\",\n  \"max_context_length\": 4096,\n  \"stream_responses\": true,\n  \"show_token_speed\": true,\n  \"font_size\": 14,\n  \"send_on_enter\": true,\n  \"enable_sounds\": false,\n  \"auto_save_sessions\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": "{{baseUrl}}/v1/settings/general",
+                "description": "Update general settings."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Personalization",
+          "item": [
+            {
+              "name": "Get Personalization Settings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/v1/settings/personalization",
+                "description": "Get personalization settings."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Personalization Settings",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"base_style_tone\": \"professional\",\n  \"characteristics\": [\"default\"],\n  \"headers_lists_mode\": \"default\",\n  \"response_length\": \"default\",\n  \"custom_instructions\": \"\",\n  \"user_context\": \"\",\n  \"preferred_name\": \"\",\n  \"profession\": \"\",\n  \"interests\": []\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": "{{baseUrl}}/v1/settings/personalization",
+                "description": "Update personalization settings."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Data Controls",
+          "item": [
+            {
+              "name": "Get Data Controls",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/v1/settings/data-controls",
+                "description": "Get data controls settings."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Data Controls",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"save_chat_history\": true,\n  \"data_retention\": \"30_days\",\n  \"allow_model_training\": false,\n  \"export_format\": \"json\",\n  \"auto_delete_sessions\": false,\n  \"encrypt_local_data\": true,\n  \"log_api_requests\": false,\n  \"clear_on_exit\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": "{{baseUrl}}/v1/settings/data-controls",
+                "description": "Update data controls settings."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Security",
+          "item": [
+            {
+              "name": "Get Security Settings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/v1/settings/security",
+                "description": "Get security settings (password hash is never returned)."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Security Settings",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"require_password\": false,\n  \"encrypt_models\": true,\n  \"bind_localhost_only\": true,\n  \"api_port\": 8000,\n  \"enable_cors\": false,\n  \"allowed_origins\": [\"http://localhost:3000\"],\n  \"session_timeout_minutes\": 0,\n  \"audit_logging\": true,\n  \"disable_external_plugins\": true,\n  \"max_concurrent_requests\": 4\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": "{{baseUrl}}/v1/settings/security",
+                "description": "Update security settings."
+              },
+              "response": []
+            },
+            {
+              "name": "Set Password",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/settings/security/set-password?password=changeme123",
+                  "query": [
+                    {
+                      "key": "password",
+                      "value": "changeme123"
+                    }
+                  ]
+                },
+                "description": "Set the security password (min 6 characters). Sent as a query parameter."
+              },
+              "response": []
+            },
+            {
+              "name": "Verify Password",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/settings/security/verify-password?password=changeme123",
+                  "query": [
+                    {
+                      "key": "password",
+                      "value": "changeme123"
+                    }
+                  ]
+                },
+                "description": "Verify a password. Returns { \"valid\": true/false }."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Parental Controls",
+          "item": [
+            {
+              "name": "Get Parental Controls",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/v1/settings/parental-controls",
+                "description": "Get parental controls settings (PIN hash is never returned)."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Parental Controls",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"enabled\": false,\n  \"content_filter_level\": \"off\",\n  \"block_explicit_content\": false,\n  \"restrict_topics\": [],\n  \"max_session_duration_minutes\": 0,\n  \"allowed_models\": [],\n  \"disable_custom_instructions\": false,\n  \"require_pin_for_settings\": false,\n  \"activity_log\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": "{{baseUrl}}/v1/settings/parental-controls",
+                "description": "Update parental controls settings."
+              },
+              "response": []
+            },
+            {
+              "name": "Set Parental PIN",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/settings/parental-controls/set-pin?pin=1234",
+                  "query": [
+                    {
+                      "key": "pin",
+                      "value": "1234"
+                    }
+                  ]
+                },
+                "description": "Set the parental controls PIN (min 4 digits). Sent as a query parameter."
+              },
+              "response": []
+            },
+            {
+              "name": "Verify Parental PIN",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/settings/parental-controls/verify-pin?pin=1234",
+                  "query": [
+                    {
+                      "key": "pin",
+                      "value": "1234"
+                    }
+                  ]
+                },
+                "description": "Verify a parental PIN. Returns { \"valid\": true/false }."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Project",
+          "item": [
+            {
+              "name": "Get Project Settings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/v1/settings/project",
+                "description": "Get project settings."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Project Settings",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"project_name\": \"SovereignAI\",\n  \"project_version\": \"1.0.0\",\n  \"project_description\": \"A powerful AI platform with local and cloud model support.\",\n  \"author\": \"Sovereign Team\",\n  \"github_repo\": \"https://github.com/SovereignAI/Sovereign\",\n  \"environment\": \"development\",\n  \"api_endpoint\": \"http://localhost:8000\",\n  \"documentation_url\": \"https://docs.sovereign.ai\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": "{{baseUrl}}/v1/settings/project",
+                "description": "Update project settings."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Agents",
+          "item": [
+            {
+              "name": "List Agents",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/v1/settings/agents",
+                "description": "Get all agents."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Active Agent",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/v1/settings/agents/active",
+                "description": "Get the active agent, or { \"active\": false } if none."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Agent",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/v1/settings/agents/{{agentId}}",
+                "description": "Get a specific agent by id."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Agent",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"cybersecurity_expert\",\n  \"name\": \"Cyber Security Expert\",\n  \"role\": \"cybersecurity_expert\",\n  \"description\": \"Expert in security best practices\",\n  \"system_instruction\": \"You are a cybersecurity expert focused on defensive security.\",\n  \"is_active\": false,\n  \"icon\": \"shield\",\n  \"temperature\": 0.7,\n  \"max_tokens\": 2048,\n  \"enabled\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": "{{baseUrl}}/v1/settings/agents",
+                "description": "Create a new agent. role options: doctor, engineer, lawyer, teacher, scientist, writer, therapist, financial_advisor, chef, fitness_trainer, data_analyst, marketing_expert, cybersecurity_expert, historian, philosopher, custom."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Agent",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": \"cybersecurity_expert\",\n  \"name\": \"Cyber Security Expert\",\n  \"role\": \"cybersecurity_expert\",\n  \"description\": \"Updated description\",\n  \"system_instruction\": \"You are a cybersecurity expert focused on defensive security.\",\n  \"is_active\": false,\n  \"icon\": \"shield\",\n  \"temperature\": 0.7,\n  \"max_tokens\": 2048,\n  \"enabled\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": "{{baseUrl}}/v1/settings/agents/{{agentId}}",
+                "description": "Update an existing agent."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Agent",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": "{{baseUrl}}/v1/settings/agents/{{agentId}}",
+                "description": "Delete an agent by id."
+              },
+              "response": []
+            },
+            {
+              "name": "Activate Agent",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": "{{baseUrl}}/v1/settings/agents/{{agentId}}/activate",
+                "description": "Activate an agent."
+              },
+              "response": []
+            },
+            {
+              "name": "Deactivate All Agents",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": "{{baseUrl}}/v1/settings/agents/deactivate",
+                "description": "Deactivate all agents."
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

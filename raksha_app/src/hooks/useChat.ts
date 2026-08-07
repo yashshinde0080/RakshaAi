@@ -26,6 +26,8 @@ export function useChat() {
       const patch = (extra: Partial<Message> = {}) => {
         setMessages((prev) => {
           const next = [...prev];
+          // Chat was cleared while the stream was in flight — drop the patch.
+          if (next.length === 0) return next;
           next[next.length - 1] = {
             role: 'assistant',
             content: text,
@@ -58,7 +60,14 @@ export function useChat() {
         }
         if (d.reasoning) reasoning += d.reasoning;
         if (d.content) text += d.content;
-        if (d.sources?.length) sources = d.sources;
+        if (d.sources?.length) {
+          const seen = new Set<string>();
+          sources = d.sources.filter((s) => {
+            if (seen.has(s.filename)) return false;
+            seen.add(s.filename);
+            return true;
+          });
+        }
         if (d.content || d.reasoning || d.sources?.length) patch();
         if (d.done) finish();
       });

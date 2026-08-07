@@ -7,6 +7,8 @@ import type { HardwareProfile, Message, Model, RagSource, SystemStatus } from '@
 // API URL resolution order: EXPO_PUBLIC_API_URL env var → the dev-server host
 // that serves the bundle (a phone on the same Wi-Fi reaches the laptop's LAN
 // IP automatically) → localhost.
+// ponytail: hostUri exists only in dev; production builds must set
+// EXPO_PUBLIC_API_URL (a phone can't reach "localhost" of the server).
 function resolveApiUrl(): string {
   const envUrl = process.env.EXPO_PUBLIC_API_URL;
   if (envUrl) return envUrl;
