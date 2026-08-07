@@ -1,0 +1,98 @@
+app/models/page.tsx(50,12): error TS2769: No overload matches this call.
+  Overload 1 of 2, '({ models, currentModel, onLoad, onUnload, onDelete, loading }: ModelTableProps): Element', gave the following error.
+    Type '{ models: Model[]; currentModel: string; onLoad: (model: string) => Promise<void>; onUnload: () => Promise<void>; onDelete: (model: string) => Promise<void>; loading: boolean; }' is missing the following properties from type 'ModelTableProps': loadedModelId, onRemove, isLoading
+  Overload 2 of 2, '({ models, loadedModelId, onLoad, onRemove, isLoading, }: ModelTableProps): Element', gave the following error.
+    Type '{ models: Model[]; currentModel: string; onLoad: (model: string) => Promise<void>; onUnload: () => Promise<void>; onDelete: (model: string) => Promise<void>; loading: boolean; }' is missing the following properties from type 'ModelTableProps': loadedModelId, onRemove, isLoading
+app/models/page.tsx(61,8): error TS2769: No overload matches this call.
+  Overload 1 of 2, '({ open, onClose, onDownload, downloadStatus }: DownloadModalProps): Element', gave the following error.
+    Property 'isLoading' is missing in type '{ open: boolean; onClose: () => void; onDownload: (model: string, quant: string) => Promise<void>; downloadStatus: any; }' but required in type 'DownloadModalProps'.
+  Overload 2 of 2, '({ onDownload, isLoading, }: DownloadModalProps): Element', gave the following error.
+    Property 'isLoading' is missing in type '{ open: boolean; onClose: () => void; onDownload: (model: string, quant: string) => Promise<void>; downloadStatus: any; }' but required in type 'DownloadModalProps'.
+components/models/DownloadModal.tsx(3,10): error TS2300: Duplicate identifier 'useState'.
+components/models/DownloadModal.tsx(5,3): error TS2300: Duplicate identifier 'Dialog'.
+components/models/DownloadModal.tsx(6,3): error TS2300: Duplicate identifier 'DialogContent'.
+components/models/DownloadModal.tsx(7,3): error TS2300: Duplicate identifier 'DialogDescription'.
+components/models/DownloadModal.tsx(8,3): error TS2300: Duplicate identifier 'DialogFooter'.
+components/models/DownloadModal.tsx(9,3): error TS2300: Duplicate identifier 'DialogHeader'.
+components/models/DownloadModal.tsx(10,3): error TS2300: Duplicate identifier 'DialogTitle'.
+components/models/DownloadModal.tsx(12,10): error TS2300: Duplicate identifier 'Button'.
+components/models/DownloadModal.tsx(13,10): error TS2300: Duplicate identifier 'Input'.
+components/models/DownloadModal.tsx(14,10): error TS2300: Duplicate identifier 'Label'.
+components/models/DownloadModal.tsx(16,3): error TS2300: Duplicate identifier 'Select'.
+components/models/DownloadModal.tsx(17,3): error TS2300: Duplicate identifier 'SelectContent'.
+components/models/DownloadModal.tsx(18,3): error TS2300: Duplicate identifier 'SelectItem'.
+components/models/DownloadModal.tsx(19,3): error TS2300: Duplicate identifier 'SelectTrigger'.
+components/models/DownloadModal.tsx(20,3): error TS2300: Duplicate identifier 'SelectValue'.
+components/models/DownloadModal.tsx(23,10): error TS2300: Duplicate identifier 'Download'.
+components/models/DownloadModal.tsx(41,17): error TS2323: Cannot redeclare exported variable 'DownloadModal'.
+components/models/DownloadModal.tsx(41,17): error TS2393: Duplicate function implementation.
+components/models/DownloadModal.tsx(129,10): error TS2300: Duplicate identifier 'useState'.
+components/models/DownloadModal.tsx(131,3): error TS2300: Duplicate identifier 'Dialog'.
+components/models/DownloadModal.tsx(132,3): error TS2300: Duplicate identifier 'DialogContent'.
+components/models/DownloadModal.tsx(133,3): error TS2300: Duplicate identifier 'DialogDescription'.
+components/models/DownloadModal.tsx(134,3): error TS2300: Duplicate identifier 'DialogFooter'.
+components/models/DownloadModal.tsx(135,3): error TS2300: Duplicate identifier 'DialogHeader'.
+components/models/DownloadModal.tsx(136,3): error TS2300: Duplicate identifier 'DialogTitle'.
+components/models/DownloadModal.tsx(139,10): error TS2300: Duplicate identifier 'Input'.
+components/models/DownloadModal.tsx(140,10): error TS2300: Duplicate identifier 'Label'.
+components/models/DownloadModal.tsx(141,10): error TS2300: Duplicate identifier 'Button'.
+components/models/DownloadModal.tsx(142,26): error TS2307: Cannot find module '@/components/ui/checkbox' or its corresponding type declarations.
+components/models/DownloadModal.tsx(144,3): error TS2300: Duplicate identifier 'Select'.
+components/models/DownloadModal.tsx(145,3): error TS2300: Duplicate identifier 'SelectContent'.
+components/models/DownloadModal.tsx(146,3): error TS2300: Duplicate identifier 'SelectItem'.
+components/models/DownloadModal.tsx(147,3): error TS2300: Duplicate identifier 'SelectTrigger'.
+components/models/DownloadModal.tsx(148,3): error TS2300: Duplicate identifier 'SelectValue'.
+components/models/DownloadModal.tsx(150,10): error TS2300: Duplicate identifier 'Download'.
+components/models/DownloadModal.tsx(182,3): error TS2717: Subsequent property declarations must have the same type.  Property 'onDownload' must be of type '(model: string, quant: string) => Promise<void>', but here has type '(repoId: string, revision?: string | undefined, taskOverride?: string | undefined, trustRemoteCode?: boolean | undefined) => Promise<any>'.
+components/models/DownloadModal.tsx(191,17): error TS2323: Cannot redeclare exported variable 'DownloadModal'.
+components/models/DownloadModal.tsx(191,17): error TS2393: Duplicate function implementation.
+components/models/DownloadModal.tsx(216,9): error TS2554: Expected 2 arguments, but got 4.
+components/models/DownloadModal.tsx(318,33): error TS7006: Parameter 'checked' implicitly has an 'any' type.
+components/models/ModelTable.tsx(3,10): error TS2300: Duplicate identifier 'Button'.
+components/models/ModelTable.tsx(4,10): error TS2300: Duplicate identifier 'Badge'.
+components/models/ModelTable.tsx(6,3): error TS2300: Duplicate identifier 'Table'.
+components/models/ModelTable.tsx(7,3): error TS2300: Duplicate identifier 'TableBody'.
+components/models/ModelTable.tsx(8,3): error TS2300: Duplicate identifier 'TableCell'.
+components/models/ModelTable.tsx(9,3): error TS2300: Duplicate identifier 'TableHead'.
+components/models/ModelTable.tsx(10,3): error TS2300: Duplicate identifier 'TableHeader'.
+components/models/ModelTable.tsx(11,3): error TS2300: Duplicate identifier 'TableRow'.
+components/models/ModelTable.tsx(24,10): error TS2300: Duplicate identifier 'Play'.
+components/models/ModelTable.tsx(24,24): error TS2300: Duplicate identifier 'Trash2'.
+components/models/ModelTable.tsx(24,32): error TS2300: Duplicate identifier 'Loader2'.
+components/models/ModelTable.tsx(38,17): error TS2323: Cannot redeclare exported variable 'ModelTable'.
+components/models/ModelTable.tsx(38,17): error TS2393: Duplicate function implementation.
+components/models/ModelTable.tsx(168,3): error TS2300: Duplicate identifier 'Table'.
+components/models/ModelTable.tsx(169,3): error TS2300: Duplicate identifier 'TableBody'.
+components/models/ModelTable.tsx(170,3): error TS2300: Duplicate identifier 'TableCell'.
+components/models/ModelTable.tsx(171,3): error TS2300: Duplicate identifier 'TableHead'.
+components/models/ModelTable.tsx(172,3): error TS2300: Duplicate identifier 'TableHeader'.
+components/models/ModelTable.tsx(173,3): error TS2300: Duplicate identifier 'TableRow'.
+components/models/ModelTable.tsx(175,10): error TS2300: Duplicate identifier 'Badge'.
+components/models/ModelTable.tsx(176,10): error TS2300: Duplicate identifier 'Button'.
+components/models/ModelTable.tsx(177,10): error TS2300: Duplicate identifier 'Play'.
+components/models/ModelTable.tsx(177,16): error TS2300: Duplicate identifier 'Trash2'.
+components/models/ModelTable.tsx(177,24): error TS2300: Duplicate identifier 'Loader2'.
+components/models/ModelTable.tsx(180,3): error TS2717: Subsequent property declarations must have the same type.  Property 'models' must be of type 'Model[]', but here has type 'ModelInfo[]'.
+components/models/ModelTable.tsx(182,3): error TS2717: Subsequent property declarations must have the same type.  Property 'onLoad' must be of type '(model: string) => Promise<void>', but here has type '(modelId: string) => void'.
+components/models/ModelTable.tsx(187,17): error TS2323: Cannot redeclare exported variable 'ModelTable'.
+components/models/ModelTable.tsx(187,17): error TS2393: Duplicate function implementation.
+components/models/ModelTable.tsx(230,30): error TS2339: Property 'repo_id' does not exist on type 'Model'.
+components/models/ModelTable.tsx(239,28): error TS2339: Property 'task_type' does not exist on type 'Model'.
+components/models/ModelTable.tsx(243,26): error TS2339: Property 'size_human' does not exist on type 'Model'.
+components/models/ModelTable.tsx(249,29): error TS2339: Property 'status' does not exist on type 'Model'.
+components/models/ModelTable.tsx(251,33): error TS2339: Property 'status' does not exist on type 'Model'.
+components/models/ModelTable.tsx(253,35): error TS2339: Property 'status' does not exist on type 'Model'.
+components/models/ModelTable.tsx(258,28): error TS2339: Property 'status' does not exist on type 'Model'.
+components/models/ModelTable.tsx(261,28): error TS2339: Property 'status' does not exist on type 'Model'.
+components/models/ModelTable.tsx(265,26): error TS2339: Property 'load_count' does not exist on type 'Model'.
+components/models/ModelTable.tsx(277,31): error TS2339: Property 'status' does not exist on type 'Model'.
+hooks/useModels.ts(3,10): error TS2300: Duplicate identifier 'useState'.
+hooks/useModels.ts(3,20): error TS2300: Duplicate identifier 'useCallback'.
+hooks/useModels.ts(9,17): error TS2323: Cannot redeclare exported variable 'useModels'.
+hooks/useModels.ts(9,17): error TS2393: Duplicate function implementation.
+hooks/useModels.ts(185,10): error TS2300: Duplicate identifier 'useState'.
+hooks/useModels.ts(185,31): error TS2300: Duplicate identifier 'useCallback'.
+hooks/useModels.ts(199,17): error TS2323: Cannot redeclare exported variable 'useModels'.
+hooks/useModels.ts(199,17): error TS2393: Duplicate function implementation.
+lib/api.ts(1,7): error TS2451: Cannot redeclare block-scoped variable 'API_BASE'.
+lib/api.ts(167,7): error TS2451: Cannot redeclare block-scoped variable 'API_BASE'.

@@ -1,0 +1,24 @@
+
+> frotend@0.1.0 build
+> next build
+
+ΓÜá Specified "rewrites" will not automatically work with "output: export". See more info here: https://nextjs.org/docs/messages/export-no-custom-routes
+Γû▓ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+ΓÜá Specified "rewrites" will not automatically work with "output: export". See more info here: https://nextjs.org/docs/messages/export-no-custom-routes
+Γ£ô Compiled successfully in 4.6s
+  Running TypeScript ...
+Failed to compile.
+
+./app/benchmark/page.tsx:48:17
+Type error: Argument of type 'unknown' is not assignable to parameter of type 'SetStateAction<BenchmarkResult | null>'.
+
+  46 |     try {
+  47 |       const res = await api.runBenchmark(iterations, maxTokens);
+> 48 |       setResult(res);
+     |                 ^
+  49 |     } catch (err: any) {
+  50 |       setError(err.message || 'Benchmark failed');
+  51 |     } finally {
+Next.js build worker exited with code: 1 and signal: null

@@ -1,0 +1,33 @@
+
+> frotend@0.1.0 build
+> next build
+
+⚠ Specified "rewrites" will not automatically work with "output: export". See more info here: https://nextjs.org/docs/messages/export-no-custom-routes
+▲ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+⚠ Specified "rewrites" will not automatically work with "output: export". See more info here: https://nextjs.org/docs/messages/export-no-custom-routes
+✓ Compiled successfully in 8.4s
+  Running TypeScript ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/10) ...
+  Generating static pages using 3 workers (2/10)
+  Generating static pages using 3 workers (4/10)
+  Generating static pages using 3 workers (7/10)
+✓ Generating static pages using 3 workers (10/10) in 551.3ms
+  Finalizing page optimization ...
+⚠ rewrites, redirects, and headers are not applied when exporting your application, detected (rewrites). See more info here: https://nextjs.org/docs/messages/export-no-custom-routes
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /benchmark
+├ ○ /chat
+├ ○ /documents
+├ ○ /models
+├ ○ /plugins
+└ ○ /system
+
+
+○  (Static)  prerendered as static content
+

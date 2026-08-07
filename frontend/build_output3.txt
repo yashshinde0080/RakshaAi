@@ -1,0 +1,24 @@
+
+> frotend@0.1.0 build
+> next build
+
+ΓÜá Specified "rewrites" will not automatically work with "output: export". See more info here: https://nextjs.org/docs/messages/export-no-custom-routes
+Γû▓ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+ΓÜá Specified "rewrites" will not automatically work with "output: export". See more info here: https://nextjs.org/docs/messages/export-no-custom-routes
+Γ£ô Compiled successfully in 4.4s
+  Running TypeScript ...
+Failed to compile.
+
+./app/page.tsx:26:25
+Type error: Argument of type 'unknown' is not assignable to parameter of type 'SystemStatus'.
+
+  24 |         ]);
+  25 |         
+> 26 |         setSystemStatus(statusRes);
+     |                         ^
+  27 |         setHardware(hwRes);
+  28 |         setRecommendations(recRes.recommendations || []);
+  29 |       } catch (error) {
+Next.js build worker exited with code: 1 and signal: null

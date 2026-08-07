@@ -1,0 +1,16 @@
+app/page.tsx(26,25): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'SystemStatus'.
+app/page.tsx(27,21): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Hardware'.
+app/page.tsx(28,28): error TS18046: 'recRes' is of type 'unknown'.
+app/system/page.tsx(70,19): error TS18048: 'metrics.cpu_percent' is possibly 'undefined'.
+app/system/page.tsx(70,60): error TS18048: 'metrics.cpu_percent' is possibly 'undefined'.
+app/system/page.tsx(76,19): error TS18048: 'metrics.ram_percent' is possibly 'undefined'.
+app/system/page.tsx(76,60): error TS18048: 'metrics.ram_percent' is possibly 'undefined'.
+components/chat/ModeSwitcher.tsx(37,23): error TS18046: 'result' is of type 'unknown'.
+components/layout/TopBar.tsx(41,28): error TS18048: 'metrics.cpu_percent' is possibly 'undefined'.
+components/layout/TopBar.tsx(50,28): error TS18048: 'metrics.ram_percent' is possibly 'undefined'.
+hooks/useModels.ts(80,15): error TS18046: 'status' is of type 'unknown'.
+hooks/useModels.ts(80,50): error TS18046: 'status' is of type 'unknown'.
+hooks/useModels.ts(80,83): error TS18046: 'status' is of type 'unknown'.
+hooks/useModels.ts(82,22): error TS18046: 'status' is of type 'unknown'.
+hooks/useModels.ts(89,22): error TS18046: 'status' is of type 'unknown'.
+hooks/useModels.ts(92,28): error TS18046: 'status' is of type 'unknown'.
