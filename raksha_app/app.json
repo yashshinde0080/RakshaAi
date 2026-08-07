@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "raksha_app",
+    "name": "Raksha AI",
     "slug": "raksha_app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,9 +22,6 @@
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
-    },
-    "extra": {
-      "apiUrl": "${EXPO_PUBLIC_API_URL}"
     },
     "experiments": {
       "typedRoutes": true,
