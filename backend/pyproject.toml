@@ -70,3 +70,13 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
+
+# llama-cpp-python publishes no prebuilt wheels on PyPI (source build only).
+# Use the maintainer's CPU wheel index so no local C++ toolchain is required.
+[[tool.uv.index]]
+name = "abetlen-llama-cpp"
+url = "https://abetlen.github.io/llama-cpp-python/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+llama-cpp-python = { index = "abetlen-llama-cpp" }

@@ -122,12 +122,12 @@ sequenceDiagram
 - Integration with EHR/EMR systems.
 
 ## 9. Pre-Production Checklist
-- [ ] Clinical sign-off on all rule thresholds in `triageEngine.ts`.
-- [ ] Unit tests covering every branch of `calculateTriage`.
-- [ ] Region-specific emergency number configuration.
+- [ ] Clinical sign-off on all rule thresholds in `triageEngine.ts` (tracked per-threshold in [[PRD]] §10 — Clinical Review Log).
+- [x] Unit tests covering every branch of `calculateTriage` (see `healthai-triage/tests/triageEngine.test.ts` — 55 tests; 62 with history tests).
+- [x] Region-specific emergency number configuration (`healthai-triage/src/config.ts` → `EMERGENCY_NUMBER`).
 - [ ] Legal/compliance review of disclaimer language for target jurisdictions.
 - [ ] Accessibility audit (screen reader labels currently minimal on custom components).
 
 ## See Also
-- [[PRD]] — Product scope, audience, and feature rationale
+- [[PRD]] — Product scope, audience, and feature rationale; §3.2 covers why triage is rule-based rather than LLM-based, §10 is the Clinical Review Log
 - [[Triage Engine]] — This document's §5, kept in sync with `src/logic/triageEngine.ts`
