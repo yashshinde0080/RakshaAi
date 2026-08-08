@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -27,6 +28,13 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { setSettingsOpen } = useStore();
+
+  // Desktop shell reports the real app version (electron/main.js get-version);
+  // the web build falls back to the same hardcoded value.
+  const [version, setVersion] = useState('1.0.0');
+  useEffect(() => {
+    window.electronAPI?.getVersion?.().then(setVersion);
+  }, []);
 
   return (
     <aside className="w-64 border-r bg-card flex flex-col">
@@ -72,7 +80,7 @@ export function Sidebar() {
         </button>
         <div className="flex items-center justify-between px-3">
           <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Raksha AI</p>
-          <p className="text-[10px] text-muted-foreground">v1.0.0</p>
+          <p className="text-[10px] text-muted-foreground">v{version}</p>
         </div>
       </div>
     </aside>

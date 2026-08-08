@@ -133,7 +133,9 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"https?://.*",
+    # Web dev (http/https), Electron shell (app://-), Expo (exp://…) — the
+    # renderer origin must match or every fetch gets CORS-blocked.
+    allow_origin_regex=r"(?:https?|app|exp)://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

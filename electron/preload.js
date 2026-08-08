@@ -15,16 +15,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Backend control
   restartBackend: () => ipcRenderer.invoke('restart-backend'),
   
-  // Window controls
-  minimize: () => ipcRenderer.send('window-minimize'),
-  maximize: () => ipcRenderer.send('window-maximize'),
-  close: () => ipcRenderer.send('window-close'),
-  
   // Events
-  onBackendStatus: (callback) => {
-    ipcRenderer.on('backend-status', (event, status) => callback(status));
-  },
-
   // Menu/tray navigation → renderer router (returns an unsubscribe)
   onNavigate: (callback) => {
     const listener = (event, path) => callback(path);
