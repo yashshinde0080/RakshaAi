@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useStore } from '@/store';
 import { api } from '@/lib/api';
-import { Cpu, HardDrive, ArrowRight, Gauge, Sparkles, Rocket } from 'lucide-react';
+import { BrandMark } from '@/components/BrandMark';
+import { Cpu, HardDrive, ArrowRight, Gauge, Sparkles, Rocket, HeartPulse } from 'lucide-react';
 import Link from 'next/link';
 import { ModelControlPanel } from '@/components/models/ModelControlPanel';
 import type { Recommendation } from '@/types';
@@ -50,11 +51,14 @@ export default function HomePage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Welcome to SovereignAI Edge</h1>
-        <p className="text-muted-foreground mt-2">
-          Portable, offline AI compute platform
-        </p>
+      <div className="flex items-center gap-4">
+        <BrandMark size={48} />
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Welcome to Raksha AI</h1>
+          <p className="text-muted-foreground mt-1">
+            Your private, offline AI guardian — local intelligence and vitals triage, zero cloud.
+          </p>
+        </div>
       </div>
 
       {/* First-run hardware suggestions banner */}
@@ -135,7 +139,28 @@ export default function HomePage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="border-brand/40 bg-brand/5 relative overflow-hidden">
+          <div className="absolute -top-10 -right-10 h-24 w-24 rounded-full bg-brand/10 blur-2xl" />
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <HeartPulse className="h-5 w-5 text-brand" />
+              <CardTitle className="text-base">Medical Triage</CardTitle>
+            </div>
+            <CardDescription>
+              ESI triage with two AI safety gates — runs even without a model
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/triage">
+              <Button className="w-full bg-brand hover:bg-brand/90 text-white">
+                Run Triage
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Get Started</CardTitle>

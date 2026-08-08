@@ -136,7 +136,11 @@ class FullRAMEngine(BaseEngine):
         except Exception as e:
             self.loaded = False
             msg = str(e)
-            if "not supported yet" in msg:
+            # Transformers rejects architectures it can't parse with exactly
+            # these phrases (see /v1/models/load, which maps them to 422).
+            # Any such failure means transformers can't run this model, so try
+            # llama.cpp before giving up — never silently drop the fallback.
+            if "not supported" in msg or "architecture" in msg:
                 # Check if this is an ik_llama.cpp-only model (IQ2_BN, etc.)
                 basename = os.path.basename(self.model_path).lower()
                 is_ik_only = any(tag in basename for tag in ("iq2_bn", "iq2_bnr4", "iq2_bn_r4"))

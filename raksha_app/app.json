@@ -26,6 +26,9 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "plugins": [
+      "expo-sqlite"
+    ]
   }
 }

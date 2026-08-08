@@ -18,6 +18,11 @@ from app.core.engine_factory import EngineFactory
 
 router = APIRouter()
 
+# A hung model must not hold a chat reply hostage forever. Time-box the
+# non-stream path; a timeout surfaces as an error response (no decision is at
+# stake here — the deterministic guardrail card renders regardless).
+CHAT_LLM_TIMEOUT_SECONDS = 300
+
 
 @router.post("/completions")
 async def chat_completions(request: Request, chat_request: ChatRequest):
@@ -51,6 +56,21 @@ async def chat_completions(request: Request, chat_request: ChatRequest):
                 # Otherwise, insert it as the first message
                 messages_dicts.insert(0, {"role": "system", "content": system_prompt})
     
+    # Raksha AI: route medical/healthcare queries through the triage agents.
+    # The model answers as a healthcare helper and instructor — never a
+    # doctor — and a triage hint from the deterministic ESI flowchart is
+    # attached to the reply (rendered as a guardrail card in the console).
+    from app.core.triage import (
+        HEALTHCARE_HELPER_SYSTEM_PROMPT,
+        is_medical_query,
+        triage_hint_from_text,
+    )
+    last_user = next((m["content"] for m in reversed(messages_dicts) if m["role"] == "user"), "")
+    triage_hint = None
+    if is_medical_query(last_user):
+        triage_hint = triage_hint_from_text(last_user)
+        messages_dicts.insert(0, {"role": "system", "content": HEALTHCARE_HELPER_SYSTEM_PROMPT})
+
     # RAG Integration
     rag_metadata_out = None
     if chat_request.use_rag and getattr(app.state, "vector_store", None):
@@ -125,16 +145,20 @@ async def chat_completions(request: Request, chat_request: ChatRequest):
     
     if chat_request.stream:
         return StreamingResponse(
-            stream_response(app.state.active_engine, prompt, chat_request, rag_metadata_out),
+            stream_response(app.state.active_engine, prompt, chat_request, rag_metadata_out, triage_hint),
             media_type="text/event-stream"
         )
     
-    # Non-streaming response
-    response = await app.state.active_engine.generate(
-        input_data=prompt,
-        max_tokens=chat_request.max_tokens,
-        temperature=chat_request.temperature,
-        top_p=chat_request.top_p
+    # Non-streaming response (time-boxed — a hung model returns an error
+    # instead of blocking the request forever)
+    response = await asyncio.wait_for(
+        app.state.active_engine.generate(
+            input_data=prompt,
+            max_tokens=chat_request.max_tokens,
+            temperature=chat_request.temperature,
+            top_p=chat_request.top_p
+        ),
+        timeout=CHAT_LLM_TIMEOUT_SECONDS,
     )
     
     raw_output = response.get("output", "") if "output" in response else response.get("text", "")
@@ -160,7 +184,8 @@ async def chat_completions(request: Request, chat_request: ChatRequest):
             "prompt_tokens": response.get("prompt_tokens", 0),
             "completion_tokens": response.get("completion_tokens", 0),
             "total_tokens": response.get("total_tokens", 0)
-        }
+        },
+        triage=triage_hint
     )
 
 @router.post("/execute")
@@ -185,10 +210,11 @@ async def execute_task(request: Request):
 
 
 async def stream_response(
-    engine, 
-    prompt: str, 
+    engine,
+    prompt: str,
     request: ChatRequest,
-    rag_metadata: list = None
+    rag_metadata: list = None,
+    triage_hint: dict = None
 ) -> AsyncGenerator[str, None]:
     """Stream tokens, splitting <think>...</think> reasoning out of content.
 
@@ -259,7 +285,20 @@ async def stream_response(
             }]
         )
         yield f"data: {json.dumps(meta_chunk.model_dump())}\n\n"
-    
+
+    # Raksha AI: attach the triage-agent hint for medical replies (sent after
+    # the text stream so the guardrail card can render with the final answer).
+    if triage_hint:
+        triage_chunk = StreamChunk(
+            id=f"chunk-triage",
+            choices=[{
+                "index": 0,
+                "delta": {"triage": triage_hint},
+                "finish_reason": None
+            }]
+        )
+        yield f"data: {json.dumps(triage_chunk.model_dump())}\n\n"
+
     yield "data: [DONE]\n\n"
 
 

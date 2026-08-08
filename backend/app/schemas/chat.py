@@ -41,6 +41,9 @@ class ChatResponse(BaseModel):
     model: str
     choices: List[Dict[str, Any]]
     usage: Dict[str, int]
+    # Raksha AI: attached when the query is medical/healthcare — the rule-engine
+    # triage verdict behind the "healthcare helper, not a doctor" guardrail.
+    triage: Optional[Dict[str, Any]] = None
 
 
 class StreamChunk(BaseModel):

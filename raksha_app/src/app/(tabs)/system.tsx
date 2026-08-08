@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,10 +8,25 @@ import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, Spacing } from '@/constants/theme';
 import { useServer } from '@/hooks/useServer';
 import { useTheme } from '@/hooks/use-theme';
+import { getResources } from '@/api';
+import type { ResourceUsage } from '@/types';
 
 export default function SystemScreen() {
   const { status, hardware, loading, error, refresh } = useServer();
   const theme = useTheme();
+  const [resources, setResources] = useState<ResourceUsage | null>(null);
+
+  // ponytail: poll instead of a websocket — same data, no new dependency.
+  useEffect(() => {
+    const timer = setInterval(async () => {
+      try {
+        setResources(await getResources());
+      } catch {
+        // backend momentarily unreachable — keep last snapshot
+      }
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <SafeAreaView style={styles.flex} edges={['top']}>
@@ -47,6 +63,28 @@ export default function SystemScreen() {
 
         <ThemedView type="backgroundElement" style={styles.card}>
           <ThemedText type="smallBold" style={styles.cardTitle}>
+            Live resources
+          </ThemedText>
+          <StatRow
+            label="CPU"
+            value={resources ? `${resources.cpu_percent.toFixed(0)}%` : '—'}
+          />
+          <StatRow
+            label="RAM"
+            value={resources ? `${resources.ram_percent.toFixed(0)}% (${resources.ram_used_gb.toFixed(1)} GB)` : '—'}
+          />
+          <StatRow
+            label="Disk read"
+            value={resources ? `${resources.disk_read_mb_s.toFixed(1)} MB/s` : '—'}
+          />
+          <StatRow
+            label="Disk write"
+            value={resources ? `${resources.disk_write_mb_s.toFixed(1)} MB/s` : '—'}
+          />
+        </ThemedView>
+
+        <ThemedView type="backgroundElement" style={styles.card}>
+          <ThemedText type="smallBold" style={styles.cardTitle}>
             Hardware
           </ThemedText>
           <StatRow label="CPU" value={hardware?.cpu_name ?? '—'} />
@@ -62,6 +100,21 @@ export default function SystemScreen() {
           />
           <StatRow label="Disk" value={hardware?.disk_type ?? '—'} />
         </ThemedView>
+
+        {status?.engine_stats && Object.keys(status.engine_stats).length > 0 && (
+          <ThemedView type="backgroundElement" style={styles.card}>
+            <ThemedText type="smallBold" style={styles.cardTitle}>
+              Engine statistics
+            </ThemedText>
+            {Object.entries(status.engine_stats).map(([key, value]) => (
+              <StatRow
+                key={key}
+                label={key.replace(/_/g, ' ')}
+                value={typeof value === 'number' ? value.toFixed(2) : String(value)}
+              />
+            ))}
+          </ThemedView>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

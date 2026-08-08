@@ -73,11 +73,23 @@ class LayerStreamEngine(BaseEngine):
 
         self.weights_dir = ""
         self.layer_executor = None
+        self.task_metadata = {}  # populated in load(); mirrors FullRAMEngine
 
     async def load(self):
         """Prepare meta scaffolding"""
         start_time = time.time()
-        
+
+        # Expose task metadata (task_type / is_generative / input_modality) the
+        # same way FullRAMEngine does — /system/status, /models/current, the
+        # triage gate and the metrics websocket all read it. Without this the
+        # engine looks non-generative and the LLM triage path never runs.
+        try:
+            from app.core.task_resolver import TaskResolver
+            self.task_metadata = TaskResolver.resolve(self.model_path)
+        except Exception as e:
+            self.task_metadata = {}
+            print(f"LayerStream: task resolution failed (engine treated as non-generative): {e}")
+
         from app.config import settings
         self.weights_dir = os.path.join(str(settings.workspace_dir / "offload_cache"), os.path.basename(self.model_path.rstrip("/\\")))
         os.makedirs(self.weights_dir, exist_ok=True)

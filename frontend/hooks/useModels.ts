@@ -9,6 +9,8 @@ import type { CurrentModel, DownloadStatus, Model, SystemStatus } from '@/types'
 
 interface ElectronAPI {
   showNotification?: (opts: { title: string; body: string }) => void;
+  /** Electron shell menu/tray navigation (see electron/preload.js). Returns an unsubscribe. */
+  onNavigate?: (callback: (path: string) => void) => () => void;
 }
 
 declare global {

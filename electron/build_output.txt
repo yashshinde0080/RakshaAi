@@ -1,0 +1,12 @@
+
+> sovereign-ai-desktop@1.0.0 build:linux
+> electron-builder --linux
+
+  • electron-builder  version=24.13.3 os=6.8.0
+  • loaded configuration  file=package.json ("build" field)
+  • packaging       platform=linux arch=x64 electron=28.3.3 appOutDir=dist/linux-unpacked
+  • building        target=AppImage arch=x64 file=dist/SovereignAI Edge-1.0.0.AppImage
+  • application Linux category is set to default "Utility"  reason=linux.category is not set and cannot map from macOS docs=https://www.electron.build/configuration/linux
+  • default Electron icon is used  reason=application icon is not set
+  • building        target=deb arch=x64 file=dist/sovereign-ai-desktop_1.0.0_amd64.deb
+  • application Linux category is set to default "Utility"  reason=linux.category is not set and cannot map from macOS docs=https://www.electron.build/configuration/linux

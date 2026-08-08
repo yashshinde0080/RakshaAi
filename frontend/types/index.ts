@@ -14,6 +14,16 @@ export interface Message {
   reasoning?: string;
   /** RAG sources cited by an assistant reply (from stream rag_metadata). */
   sources?: RagSource[];
+  /** Raksha AI: triage-agent verdict attached to medical/healthcare replies. */
+  triage?: TriageHint;
+}
+
+export interface TriageHint {
+  severity: number;
+  label: string;
+  is_emergency: boolean;
+  recommended_action: string;
+  reasons: string[];
 }
 
 export interface Model {
@@ -195,4 +205,50 @@ export interface SettingsMap {
   security?: Record<string, unknown>;
   parental_controls?: Record<string, unknown>;
   [key: string]: unknown;
+}
+
+// ── Raksha AI Triage ───────────────────────────────────────────────────────
+export interface TriageVitals {
+  heart_rate?: number;
+  systolic_bp?: number;
+  spo2?: number;
+  temperature_c?: number;
+  respiratory_rate?: number;
+  gender?: 'male' | 'female' | 'other';
+}
+
+export interface TriageRedFlags {
+  unresponsive: boolean;
+  not_breathing: boolean;
+  stroke_signs: boolean;
+  chest_pain_severe: boolean;
+  uncontrolled_bleeding: boolean;
+  anaphylaxis_signs: boolean;
+  seizure_active: boolean;
+}
+
+export interface TriageInput {
+  age_years: number;
+  pain_score: number;
+  symptom_duration_hours: number;
+  vitals: TriageVitals;
+  red_flags: TriageRedFlags;
+  symptoms: string[];
+}
+
+export interface TriageResult {
+  severity: number;
+  label: string;
+  is_emergency: boolean;
+  recommended_action: string;
+  reasons: string[];
+  red_flags: string[];
+  source: 'llm' | 'llm_retry' | 'rules';
+  escalated: boolean;
+  over_triage?: boolean; // absent in localStorage history saved before this field existed
+  validation: {
+    validator_errors: string[];
+    schema_ok: boolean;
+    retries: number;
+  };
 }

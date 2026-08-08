@@ -1,12 +1,25 @@
-import { Image } from 'expo-image';
 import * as SplashScreen from 'expo-splash-screen';
 import { useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, { Easing, Keyframe } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
 const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90;
 const DURATION = 600;
+
+// Raksha AI monogram tile: teal shield-tile + "R" + a heartbeat pulse.
+function MarkTile() {
+  return (
+    <View style={styles.tile}>
+      <Text style={styles.monogram}>R</Text>
+      <View style={styles.pulse}>
+        <View style={[styles.tick, styles.tickShort]} />
+        <View style={[styles.tick, styles.tickTall]} />
+        <View style={[styles.tick, styles.tickMid]} />
+      </View>
+    </View>
+  );
+}
 
 export function AnimatedSplashOverlay() {
   const [animate, setAnimate] = useState(false);
@@ -33,8 +46,6 @@ export function AnimatedSplashOverlay() {
     },
   });
 
-  const image = <Image style={styles.image} source={require('@/assets/images/expo-logo.png')} />;
-
   return animate ? (
     <Animated.View
       entering={splashKeyframe.duration(DURATION).withCallback((finished) => {
@@ -44,7 +55,7 @@ export function AnimatedSplashOverlay() {
         }
       })}
       style={styles.splashOverlay}>
-      {image}
+      <MarkTile />
     </Animated.View>
   ) : (
     <View
@@ -54,7 +65,7 @@ export function AnimatedSplashOverlay() {
         });
       }}
       style={styles.splashOverlay}>
-      {image}
+      <MarkTile />
     </View>
   );
 }
@@ -86,40 +97,19 @@ const logoKeyframe = new Keyframe({
   },
 });
 
-const glowKeyframe = new Keyframe({
-  0: {
-    transform: [{ rotateZ: '0deg' }],
-  },
-  100: {
-    transform: [{ rotateZ: '7200deg' }],
-  },
-});
-
 export function AnimatedIcon() {
   return (
     <View style={styles.iconContainer}>
-      <Animated.View entering={glowKeyframe.duration(60 * 1000 * 4)} style={styles.glow}>
-        <Image style={styles.glow} source={require('@/assets/images/logo-glow.png')} />
-      </Animated.View>
-
-      <Animated.View entering={keyframe.duration(DURATION)} style={styles.background} />
-      <Animated.View style={styles.imageContainer} entering={logoKeyframe.duration(DURATION)}>
-        <Image style={styles.image} source={require('@/assets/images/expo-logo.png')} />
+      <Animated.View entering={keyframe.duration(DURATION)} style={styles.background}>
+        <Animated.View entering={logoKeyframe.duration(DURATION)} style={styles.inner}>
+          <MarkTile />
+        </Animated.View>
       </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  imageContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  glow: {
-    width: 201,
-    height: 201,
-    position: 'absolute',
-  },
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -127,20 +117,54 @@ const styles = StyleSheet.create({
     height: 128,
     zIndex: 100,
   },
-  image: {
-    width: 76,
-    height: 71,
-  },
   background: {
     borderRadius: 40,
-    experimental_backgroundImage: `linear-gradient(180deg, #3C9FFE, #0274DF)`,
+    experimental_backgroundImage: `linear-gradient(180deg, #14b8a6, #0f766e)`,
     width: 128,
     height: 128,
     position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inner: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tile: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  monogram: {
+    color: '#ffffff',
+    fontSize: 52,
+    fontWeight: '800',
+    letterSpacing: -2,
+    lineHeight: 56,
+  },
+  pulse: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 4,
+    height: 20,
+  },
+  tick: {
+    width: 4,
+    borderRadius: 2,
+    backgroundColor: '#04100d',
+  },
+  tickShort: {
+    height: 8,
+  },
+  tickMid: {
+    height: 13,
+  },
+  tickTall: {
+    height: 20,
   },
   splashOverlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#208AEF',
+    experimental_backgroundImage: `linear-gradient(180deg, #14b8a6, #0f766e)`,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,

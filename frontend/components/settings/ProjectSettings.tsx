@@ -14,7 +14,7 @@ interface ProjectSettingsProps {
 
 export function ProjectSettings({ data, onSave }: ProjectSettingsProps) {
   const [form, setForm] = useState({
-    project_name: "SovereignAI",
+    project_name: "Raksha AI",
     project_version: "1.0.0",
     project_description: "",
     author: "",
@@ -152,7 +152,7 @@ export function ProjectSettings({ data, onSave }: ProjectSettingsProps) {
 
       <Button
         onClick={() => onSave(form)}
-        className="w-full bg-blue-600 hover:bg-blue-700"
+        className="w-full bg-brand hover:bg-brand/90"
       >
         <Save className="h-4 w-4 mr-2" />
         Sync Project Settings

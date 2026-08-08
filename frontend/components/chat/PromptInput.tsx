@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/lib/api';
 import { toast } from '@/components/ui/use-toast';
-import { Send, X, PencilLine, Plus, Loader2, UploadCloud } from 'lucide-react';
+import { Send, X, PencilLine, Plus, Loader2, UploadCloud, HeartPulse } from 'lucide-react';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 const MAX_UPLOAD_SIZE = 50 * 1024 * 1024; // 50MB — matches the Documents page
@@ -153,6 +154,17 @@ export function PromptInput({ onSend, disabled, externalValue, editing, onCancel
         </div>
       )}
       <div className="flex items-end gap-2">
+          {/* Raksha AI — jump straight into a medical triage run. The chat
+              conversation persists in localStorage, so nothing is lost. */}
+          <Link
+            href="/triage"
+            title="Start a Raksha AI medical triage (ESI)"
+            aria-label="Start a Raksha AI medical triage"
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl bg-brand px-3 text-xs font-semibold text-white shadow-sm transition-all hover:bg-brand/90 hover:shadow-md active:scale-95"
+          >
+            <HeartPulse className="h-4 w-4" />
+            Triage
+          </Link>
           <input
             ref={fileInputRef}
             type="file"

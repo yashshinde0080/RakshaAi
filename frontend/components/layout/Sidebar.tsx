@@ -9,22 +9,19 @@ import {
   Settings,
   Activity,
   FileText,
-  Puzzle,
   Home,
-  Gauge,
-  Save
+  HeartPulse
 } from 'lucide-react';
+import { BrandMark } from '@/components/BrandMark';
 import { useStore } from '@/store';
 
 const navItems = [
   { href: '/', icon: Home, label: 'Home' },
   { href: '/console', icon: MessageSquare, label: 'Console' },
+  { href: '/triage', icon: HeartPulse, label: 'Triage' },
   { href: '/models', icon: Box, label: 'Models' },
   { href: '/documents', icon: FileText, label: 'Documents' },
-  { href: '/benchmark', icon: Gauge, label: 'Benchmark' },
   { href: '/system', icon: Activity, label: 'System' },
-  { href: '/workspace', icon: Save, label: 'Workspace' },
-  { href: '/plugins', icon: Puzzle, label: 'Plugins' },
 ];
 
 export function Sidebar() {
@@ -35,15 +32,10 @@ export function Sidebar() {
     <aside className="w-64 border-r bg-card flex flex-col">
       {/* Logo */}
       <div className="p-6 border-b flex items-center gap-3">
-        <div
-          aria-hidden="true"
-          className="h-8 w-8 rounded-lg bg-gradient-to-br from-brand to-brand-accent flex items-center justify-center text-white text-sm font-bold shrink-0"
-        >
-          S
-        </div>
+        <BrandMark size={36} />
         <div>
-          <h1 className="text-xl font-bold text-primary">SovereignAI</h1>
-          <p className="text-xs text-muted-foreground">Edge Platform</p>
+          <h1 className="text-xl font-bold text-primary tracking-tight">Raksha AI</h1>
+          <p className="text-xs text-muted-foreground">Offline Guardian</p>
         </div>
       </div>
 
@@ -79,7 +71,7 @@ export function Sidebar() {
           Settings
         </button>
         <div className="flex items-center justify-between px-3">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">SovereignAI</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Raksha AI</p>
           <p className="text-[10px] text-muted-foreground">v1.0.0</p>
         </div>
       </div>

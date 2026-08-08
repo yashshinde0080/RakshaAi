@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Message, RagSource } from '@/types';
+import { Message, RagSource, TriageHint } from '@/types';
 import { errMsg } from '@/lib/utils';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
@@ -244,6 +244,14 @@ export function useChat() {
                   continue;
                 }
 
+                // Raksha AI: triage-agent hint attached to medical replies.
+                // Rendered as the "healthcare helper, not a doctor" card.
+                if (chunk.choices?.[0]?.delta?.triage) {
+                  const triage = chunk.choices[0].delta.triage as TriageHint;
+                  patchLastMessage({ triage });
+                  continue;
+                }
+
                 // Reasoning (thinking) deltas arrive before content for
                 // reasoning models; both accumulate into the same message.
                 const reasoningToken = chunk.choices?.[0]?.delta?.reasoning || '';
@@ -287,9 +295,15 @@ export function useChat() {
           content = reasoning;
           reasoning = undefined;
         }
+        const triage = data.triage as TriageHint | undefined;
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content, ...(reasoning ? { reasoning } : {}) },
+          {
+            role: 'assistant',
+            content,
+            ...(reasoning ? { reasoning } : {}),
+            ...(triage ? { triage } : {}),
+          },
         ]);
       }
     } catch (error) {
@@ -339,7 +353,7 @@ export function useChat() {
     const date = new Date();
     const stamp = date.toISOString().slice(0, 19).replace(/[:T]/g, '-');
     const lines: string[] = [
-      '# SovereignAI Chat Export',
+      '# Raksha AI Chat Export',
       '',
       `*Exported ${date.toLocaleString()}*`,
       '',
@@ -361,7 +375,7 @@ export function useChat() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `sovereignai-chat-${stamp}.md`;
+    a.download = `raksha-chat-${stamp}.md`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

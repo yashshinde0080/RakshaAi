@@ -7,8 +7,8 @@ import { Toaster } from '@/components/ui/toaster';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'SovereignAI Edge',
-  description: 'Portable Offline AI Platform',
+  title: 'Raksha AI',
+  description: 'Your private, offline AI guardian — local intelligence and triage decision support',
 };
 
 export default function RootLayout({

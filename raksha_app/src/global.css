@@ -1,9 +1,41 @@
 :root {
-  --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
+  --font-display: 'Avenir Next', 'Trebuchet MS', ui-rounded, 'SF Pro Rounded', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-rounded: 'SF Pro Rounded', 'Avenir Next', sans-serif;
+  --font-serif: Georgia, serif;
+}
+
+html, body, #root {
+  background-color: #04100d !important;
+  color: #e9f5f0;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #14b8a6;
+  color: #04100d;
+}
+
+/* Custom scrollbars for web */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #04100d;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1a352c;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #14b8a6;
 }

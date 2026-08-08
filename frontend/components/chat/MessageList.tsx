@@ -1,8 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Message, RagSource } from '@/types';
-import { User, Bot, Copy, Check, Pencil, RefreshCw, FileText, Brain, ChevronDown } from 'lucide-react';
+import { Message, RagSource, TriageHint } from '@/types';
+import { User, Bot, Copy, Check, Pencil, RefreshCw, FileText, Brain, ChevronDown, Stethoscope, PhoneCall } from 'lucide-react';
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -116,6 +116,54 @@ const ThinkingBlock = ({ reasoning, live }: { reasoning: string; live?: boolean 
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+};
+
+// Raksha AI guardrail: the triage-agent verdict attached to medical replies.
+// Framed as a healthcare helper/instructor — never a doctor.
+const SEVERITY_HEX: Record<number, string> = {
+  1: '#dc2626',
+  2: '#ea580c',
+  3: '#d97706',
+  4: '#65a30d',
+  5: '#16a34a',
+};
+
+const TriageCard = ({ hint }: { hint: TriageHint }) => {
+  const color = SEVERITY_HEX[hint.severity] ?? SEVERITY_HEX[5];
+  return (
+    <div className="mt-3 rounded-xl border border-brand/30 bg-brand/5 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-brand">
+          <Stethoscope className="h-3.5 w-3.5" />
+          Healthcare Helper — not a doctor
+        </span>
+        <span
+          className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold text-white"
+          style={{ backgroundColor: color }}
+        >
+          ESI Level {hint.severity}
+        </span>
+      </div>
+      <p className="mt-1.5 text-sm font-medium">{hint.label}</p>
+      <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+        {hint.recommended_action}
+      </p>
+      {hint.reasons.length > 0 && (
+        <p className="mt-1.5 text-[11px] text-muted-foreground">
+          {hint.reasons.join(' · ')}
+        </p>
+      )}
+      {hint.is_emergency && (
+        <a
+          href="tel:112"
+          className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-destructive px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-destructive/90"
+        >
+          <PhoneCall className="h-3 w-3" />
+          Call 112 now
+        </a>
+      )}
     </div>
   );
 };
@@ -247,6 +295,9 @@ export function MessageList({ messages, onEditMessage, onRegenerate, editingInde
                     reasoning={message.reasoning}
                     live={isLoading && index === messages.length - 1 && !message.content.trim()}
                   />
+                )}
+                {message.role === 'assistant' && message.triage && (
+                  <TriageCard hint={message.triage} />
                 )}
                 {!message.content.trim() && !message.reasoning &&
                   isLoading && index === messages.length - 1 && (
